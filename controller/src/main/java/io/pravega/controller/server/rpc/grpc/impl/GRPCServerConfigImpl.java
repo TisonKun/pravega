@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2017 Dell Inc., or its subsidiaries. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.pravega.common.Exceptions;
 import io.pravega.controller.server.rpc.grpc.GRPCServerConfig;
-import java.util.Optional;
 import lombok.Builder;
 import lombok.Data;
 
@@ -23,8 +22,8 @@ import lombok.Data;
 @Data
 public class GRPCServerConfigImpl implements GRPCServerConfig {
     private final int port;
-    private final Optional<String> publishedRPCHost;
-    private final Optional<Integer> publishedRPCPort;
+    private final String publishedRPCHost;
+    private final Integer publishedRPCPort;
     private final boolean authorizationEnabled;
     private final String userPasswordFile;
     private final boolean tlsEnabled;
@@ -37,12 +36,21 @@ public class GRPCServerConfigImpl implements GRPCServerConfig {
     private final boolean requestTracingEnabled;
 
     @Builder
-    public GRPCServerConfigImpl(final int port, final String publishedRPCHost, final Integer publishedRPCPort,
-                                boolean authorizationEnabled, String userPasswordFile, boolean tlsEnabled,
-                                String tlsCertFile, String tlsKeyFile, String tokenSigningKey,
-                                Integer accessTokenTTLInSeconds, String tlsTrustStore,
-                                boolean replyWithStackTraceOnError, boolean requestTracingEnabled) {
-
+    public GRPCServerConfigImpl(
+            int port,
+            String publishedRPCHost,
+            Integer publishedRPCPort,
+            boolean authorizationEnabled,
+            String userPasswordFile,
+            boolean tlsEnabled,
+            String tlsCertFile,
+            String tlsKeyFile,
+            String tokenSigningKey,
+            Integer accessTokenTTLInSeconds,
+            String tlsTrustStore,
+            boolean replyWithStackTraceOnError,
+            boolean requestTracingEnabled
+    ) {
         Preconditions.checkArgument(port > 0, "Invalid port.");
         if (publishedRPCHost != null) {
             Exceptions.checkNotNullOrEmpty(publishedRPCHost, "publishedRPCHost");
@@ -57,8 +65,8 @@ public class GRPCServerConfigImpl implements GRPCServerConfig {
         }
 
         this.port = port;
-        this.publishedRPCHost = Optional.ofNullable(publishedRPCHost);
-        this.publishedRPCPort = Optional.ofNullable(publishedRPCPort);
+        this.publishedRPCHost = publishedRPCHost;
+        this.publishedRPCPort = publishedRPCPort;
         this.authorizationEnabled = authorizationEnabled;
         this.userPasswordFile = userPasswordFile;
         this.tlsEnabled = tlsEnabled;
@@ -76,37 +84,35 @@ public class GRPCServerConfigImpl implements GRPCServerConfig {
         // Note: We don't use Lombok @ToString to automatically generate an implementation of this method,
         // in order to avoid returning a string containing sensitive security configuration.
 
-        return new StringBuilder("GRPCServerConfigImpl(")
+        return "GRPCServerConfigImpl(" +
 
                 // Endpoint config
-                .append(String.format("port: %d, ", port))
-                .append(String.format("publishedRPCHost: %s, ",
-                        publishedRPCHost.isPresent() ? publishedRPCHost.get() : "null"))
-                .append(String.format("publishedRPCPort: %s, ",
-                        publishedRPCPort.isPresent() ? publishedRPCPort.get() : "null"))
+                String.format("port: %d, ", port) +
+                String.format("publishedRPCHost: %s, ",
+                        publishedRPCHost != null ? publishedRPCHost : "null") +
+                String.format("publishedRPCPort: %s, ",
+                        publishedRPCPort != null ? publishedRPCPort : "null") +
 
                 // Auth config
-                .append(String.format("authorizationEnabled: %b, ", authorizationEnabled))
-                .append(String.format("userPasswordFile is %s, ",
-                        Strings.isNullOrEmpty(userPasswordFile) ? "unspecified" : "specified"))
-                .append(String.format("tokenSigningKey is %s, ",
-                        Strings.isNullOrEmpty(tokenSigningKey) ? "unspecified" : "specified"))
-                .append(String.format("accessTokenTTLInSeconds: %s, ", accessTokenTTLInSeconds))
+                String.format("authorizationEnabled: %b, ", authorizationEnabled) +
+                String.format("userPasswordFile is %s, ",
+                        Strings.isNullOrEmpty(userPasswordFile) ? "unspecified" : "specified") +
+                String.format("tokenSigningKey is %s, ",
+                        Strings.isNullOrEmpty(tokenSigningKey) ? "unspecified" : "specified") +
+                String.format("accessTokenTTLInSeconds: %s, ", accessTokenTTLInSeconds) +
 
                 // TLS config
-                .append(String.format("tlsEnabled: %b, ", tlsEnabled))
-                .append(String.format("tlsCertFile is %s, ",
-                        Strings.isNullOrEmpty(tlsCertFile) ? "unspecified" : "specified"))
-                .append(String.format("tlsKeyFile is %s, ",
-                        Strings.isNullOrEmpty(tlsKeyFile) ? "unspecified" : "specified"))
-                .append(String.format("tlsTrustStore is %s, ",
-                        Strings.isNullOrEmpty(tlsTrustStore) ? "unspecified" : "specified"))
+                String.format("tlsEnabled: %b, ", tlsEnabled) +
+                String.format("tlsCertFile is %s, ",
+                        Strings.isNullOrEmpty(tlsCertFile) ? "unspecified" : "specified") +
+                String.format("tlsKeyFile is %s, ",
+                        Strings.isNullOrEmpty(tlsKeyFile) ? "unspecified" : "specified") +
+                String.format("tlsTrustStore is %s, ",
+                        Strings.isNullOrEmpty(tlsTrustStore) ? "unspecified" : "specified") +
 
                 // Request processing config
-                .append(String.format("replyWithStackTraceOnError: %b, ", replyWithStackTraceOnError))
-                .append(String.format("requestTracingEnabled: %b", requestTracingEnabled))
-
-                .append(")")
-                .toString();
+                String.format("replyWithStackTraceOnError: %b, ", replyWithStackTraceOnError) +
+                String.format("requestTracingEnabled: %b", requestTracingEnabled) +
+                ")";
     }
 }
